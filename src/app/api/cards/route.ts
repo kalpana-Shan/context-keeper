@@ -6,7 +6,8 @@ export async function GET() {
     const cards = await prisma.contextCard.findMany({
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json(cards);
+    // Return the raw array, NOT wrapped in { cards: ... }
+    return NextResponse.json(cards); 
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch cards' }, { status: 500 });
   }

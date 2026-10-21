@@ -13,6 +13,7 @@ export async function POST(req: Request) {
 
     // 1. Use LLM to extract structured data
     const extracted = await extractContext(rawText);
+    console.log("Extracted data:", extracted);
 
     // 2. Edge case: Reject non-work notes based on the LLM's judgment
     if (!extracted.project || extracted.project.toUpperCase() === "NONE") {
@@ -22,6 +23,15 @@ export async function POST(req: Request) {
     }
 
     // 3. Save to database
+    console.log("Saving to DB:", {
+      rawText,
+      project: extracted.project,
+      status: extracted.status,
+      tried: extracted.tried,
+      nextAction: extracted.nextAction,
+      blockers: extracted.blockers,
+      tags: extracted.tags,
+    });
     const card = await prisma.contextCard.create({
       data: {
         id: nanoid(),
@@ -39,6 +49,9 @@ export async function POST(req: Request) {
     return NextResponse.json(card, { status: 201 });
   } catch (error) {
     console.error('Save error:', error);
-    return NextResponse.json({ error: 'Failed to save context' }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to save context' },
+      { status: 500 }
+    );
   }
 }
