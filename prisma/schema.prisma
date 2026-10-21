@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model ContextCard {
+  id          String   @id @default(cuid())
+  rawText     String
+  project     String
+  status      String
+  tried       String?
+  nextAction  String
+  blockers    String?
+  tags        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  handoffs    Handoff[]
+}
+
+model Handoff {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  cardId      String
+  card        ContextCard @relation(fields: [cardId], references: [id])
+  briefing    String
+  createdAt   DateTime @default(now())
+}
+
+model UsageLog {
+  id          String   @id @default(cuid())
+  action      String
+  duration    Int?
+  createdAt   DateTime @default(now())
+}

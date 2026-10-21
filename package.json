@@ -6,10 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:extract": "tsx scripts/test-extraction.ts"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "date-fns": "^4.4.0",
+    "dotenv": "^18.0.8",
+    "framer-motion": "^14.4.0",
+    "lucide-react": "^1.60.0",
+    "nanoid": "^6.0.2",
     "next": "16.4.2",
+    "openai": "^7.39.0",
+    "prisma": "^7.10.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
@@ -21,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
