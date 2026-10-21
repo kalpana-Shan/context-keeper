@@ -13,7 +13,8 @@ import {
   Clock,
   Trash2,
   MessageSquare,
-  Share2
+  Share2,
+  Bot
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
@@ -71,6 +72,22 @@ export function ContextCard({
         description: "Failed to copy.",
       });
     }
+  };
+
+   const handleCopyAIPrompt = async () => {
+    const prompt = `I need to continue working on a task. Here is my current context:
+- Project/Task: ${card.project}
+- Current Status: ${card.status}
+- What I've Tried: ${card.tried || "N/A"}
+- Next Action Needed: ${card.nextAction}
+- Blockers: ${card.blockers || "None"}
+
+Please review this context and help me execute the next action. Tell me exactly what to do first.`;
+    
+    await navigator.clipboard.writeText(prompt);
+    toast.success("AI Prompt copied!", {
+      description: "Paste this into Cursor, Claude, or ChatGPT to resume work.",
+    });
   };
 
   const handleHandoff = async () => {
@@ -197,6 +214,14 @@ export function ContextCard({
               className="transition-all duration-300 hover:scale-105 active:scale-95"
             >
               <MessageSquare className="w-3 h-3 mr-1" /> Slack
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleCopyAIPrompt} 
+              className="bg-indigo-50/50 hover:bg-indigo-100/50 text-indigo-700 border-indigo-200/50 transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              <Bot className="w-3 h-3 mr-1" /> AI Prompt
             </Button>
             {onDelete && (
               <Button
