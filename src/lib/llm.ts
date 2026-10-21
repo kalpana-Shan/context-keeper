@@ -11,14 +11,14 @@ export async function extractContext(rawText: string) {
     messages: [
       {
         role: "system",
-         content: `You are a context extraction engine. Extract information from the voice note into a strict JSON format.
+        content: `You are a context extraction engine. Extract information from the voice note into a strict JSON format.
 Return ONLY valid JSON. No markdown, no code blocks, no explanations.
 The JSON must have exactly these keys:
 - "project": (string) The name of the project or feature. Must be 2 to 5 words maximum. If the note is clearly not about software development or work, set project to "NONE".
-- "status": (string) Current status of the work. One sentence, specific and technical. Describe what is happening, not a single-word label. Example: "Investigating 401 on token refresh, ruled out expiry" not "Blocked".
+- "status": (string) A specific, technical sentence describing what is happening. Not just a label like "Blocked" or "In Progress". Example: "Investigating 401 on token refresh, ruled out expiry".
 - "tried": (string or null) Past-tense actions. Pay attention to past-tense verbs (checked, tried, ruled out, finished) — these indicate completed work. If none, use null.
-- "nextAction": (string or null) One actionable sentence. If no explicit next action is stated, and the note is vague, set to null. Do not invent actions.
-- "blockers": (string or null) Named person or dependency. If the note says "no blockers" or doesn't mention being blocked, set to null.
+- "nextAction": (string) The immediate next step the speaker will take. If not explicitly stated, infer the most logical step. Never null.
+- "blockers": (string or null) What is blocking progress, including anyone the speaker is waiting on. If the speaker is waiting on someone, put that here, not in nextAction.
 - "tags": (string) exactly 3 to 5 relevant tags, comma-separated, single words or short phrases. Never more than 5.`
       },
       {
@@ -35,7 +35,16 @@ The JSON must have exactly these keys:
   const cleanJson = text.replace(/```json|```/g, "").trim();
   
   try {
-    return JSON.parse(cleanJson);
+    const parsed = JSON.parse(cleanJson);
+    
+    // Fallback for vague notes so the UI doesn't break
+    if (!parsed.nextAction || parsed.nextAction.trim() === '') {
+      parsed.nextAction = parsed.project && parsed.project !== 'NONE'
+        ? `Continue working on ${parsed.project}`
+        : '';
+    }
+    
+    return parsed;
   } catch (error) {
     console.error("Failed to parse JSON:", text);
     return {};
