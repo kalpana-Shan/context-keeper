@@ -1,28 +1,41 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { generateBriefing } from '@/lib/llm';
+import { matchContext } from '@/lib/llm';
 
 export async function POST(req: Request) {
   try {
-    const { id } = await req.json();
+    // 1. The frontend sends { query: "What was I doing?" }
+    const { query } = await req.json();
 
-    if (!id) {
-      return NextResponse.json({ error: 'Card ID is required' }, { status: 400 });
+    if (!query) {
+      return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
 
-    const card = await prisma.contextCard.findUnique({
-      where: { id },
+    // 2. Fetch the 20 most recent cards to give the LLM context
+    const cards = await prisma.contextCard.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take: 20,
     });
 
-    if (!card) {
-      return NextResponse.json({ error: 'Card not found' }, { status: 404 });
+    if (cards.length === 0) {
+      return NextResponse.json({ error: 'No context cards found' }, { status: 404 });
     }
 
-    // Generate the AI briefing
-    const briefing = await generateBriefing(card);
+    // 3. Use the LLM to match the query to a specific card
+    const matchedId = await matchContext(query, cards);
 
-    return NextResponse.json({ card, briefing });
+    if (matchedId === 'NONE') {
+      return NextResponse.json({ error: 'No matching context found for that query' }, { status: 404 });
+    }
+
+    // 4. Find the full card details and return it
+    const card = await prisma.contextCard.findUnique({
+      where: { id: matchedId },
+    });
+
+    return NextResponse.json({ card });
   } catch (error) {
-    return NextResponse.json({ error: 'Restore failed' }, { status: 500 });
+    console.error('Restore error:', error);
+    return NextResponse.json({ error: 'Failed to restore context' }, { status: 500 });
   }
 }

@@ -81,7 +81,7 @@ export function SaveDialog({ open, onOpenChange, onSave }: SaveDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] glass-panel border-white/50 shadow-2xl rounded-2xl">
         <DialogHeader>
           <DialogTitle>Save Context</DialogTitle>
         </DialogHeader>
