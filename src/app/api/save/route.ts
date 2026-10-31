@@ -43,6 +43,7 @@ export async function POST(req: Request) {
         nextAction: extracted.nextAction || 'No next action specified',
         blockers: extracted.blockers || null,
         tags: extracted.tags || '',
+        assumptions: JSON.stringify(extracted.assumptions || []),
       },
     });
 

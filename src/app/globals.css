@@ -143,7 +143,7 @@
 @layer utilities {
   /* Animated aurora background for glass to blur */
   .bg-aurora {
-    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 25%, #e0e7ff 50%, #f3e8ff 75%, #fae8ff 100%);
+    background: linear-gradient(135deg, #fdfbf7 0%, #f4ece1 25%, #e8dfd3 50%, #dccbb8 75%, #fdfbf7 100%);
     background-size: 400% 400%;
     animation: aurora 20s ease infinite;
   }
@@ -153,13 +153,13 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Glass panel (purple tint) */
+  /* Glass panel (warm tint) */
   .glass-panel {
-    @apply bg-white/40 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(109,40,217,0.1)] backdrop-saturate-150;
+    @apply bg-white/40 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(120,53,15,0.1)] backdrop-saturate-150;
   }
 
   /* Optional: dark glass variant */
   .glass-panel-dark {
-    @apply bg-purple-900/20 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-saturate-150;
+    @apply bg-stone-900/20 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-saturate-150;
   }
 }

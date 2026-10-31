@@ -8,6 +8,7 @@ export async function GET() {
   await connection();
   try {
     const cards = await prisma.contextCard.findMany({
+      include: { handoffs: true },
       orderBy: { createdAt: 'desc' },
     });
     // Return the raw array, NOT wrapped in { cards: ... }

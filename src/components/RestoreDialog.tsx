@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,15 @@ export function RestoreDialog({ open, onOpenChange }: RestoreDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultCard, setResultCard] = useState<ContextCardType | null>(null);
+
+  useEffect(() => {
+    if (open && typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance("What do you need to remember?");
+      utterance.rate = 1.0;
+      setTimeout(() => window.speechSynthesis.speak(utterance), 300);
+    }
+  }, [open]);
 
   const handleRestore = async () => {
     if (!query.trim()) return;
@@ -61,7 +70,7 @@ export function RestoreDialog({ open, onOpenChange }: RestoreDialogProps) {
       <DialogContent className="glass-panel border-white/50 shadow-2xl rounded-2xl sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            <Search className="w-5 h-5 text-purple-600" />
+            <Search className="w-5 h-5 text-amber-700" />
             Restore Context
           </DialogTitle>
           <DialogDescription>
@@ -84,7 +93,7 @@ export function RestoreDialog({ open, onOpenChange }: RestoreDialogProps) {
             <Button 
               onClick={handleRestore} 
               disabled={isLoading || !query.trim()}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+              className="bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-stone-900 text-white"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Search"}
             </Button>
@@ -98,10 +107,14 @@ export function RestoreDialog({ open, onOpenChange }: RestoreDialogProps) {
 
           {resultCard && (
             <div className="mt-6">
-              <p className="text-xs font-semibold text-purple-600/70 uppercase tracking-wider mb-3">
+              <p className="text-xs font-semibold text-amber-700/70 uppercase tracking-wider mb-3">
                 Best Match Found
               </p>
-              <ContextCard card={resultCard} highlightNextAction={true} />
+              <ContextCard
+                card={resultCard}
+                highlightNextAction={true}
+                onCardUpdated={setResultCard}
+              />
             </div>
           )}
         </div>

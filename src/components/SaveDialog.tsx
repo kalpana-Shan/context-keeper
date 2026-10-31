@@ -27,6 +27,15 @@ export function SaveDialog({ open, onOpenChange, onSave }: SaveDialogProps) {
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   useEffect(() => {
+    if (open && typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance("What were you working on?");
+      utterance.rate = 1.0;
+      setTimeout(() => window.speechSynthesis.speak(utterance), 300);
+    }
+  }, [open]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && open) {
         e.preventDefault();
@@ -86,7 +95,7 @@ export function SaveDialog({ open, onOpenChange, onSave }: SaveDialogProps) {
           <DialogTitle>Save Context</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
             Speak naturally. Describe what you are working on, what you have
             tried, and what is next. Wispr Flow will transcribe your voice here.
           </div>
@@ -114,7 +123,7 @@ export function SaveDialog({ open, onOpenChange, onSave }: SaveDialogProps) {
               <Button
                 onClick={handleSave}
                 disabled={isLoading || wordCount === 0}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-stone-900 text-white"
               >
                 {isLoading ? (
                   <>
